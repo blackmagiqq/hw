@@ -17,8 +17,118 @@ type ListItem struct {
 }
 
 type list struct {
-	List // Remove me after realization.
-	// Place your code here.
+	countOfListItems int
+	frontItem *ListItem
+	backItem *ListItem
+}
+func (l *list) Len() int {
+	return l.countOfListItems
+}
+
+func (l *list) Front() *ListItem {
+	if l.frontItem != nil {
+		return l.frontItem
+	}
+	return l.backItem
+}
+
+func (l *list) Back() *ListItem {
+	if l.backItem != nil {
+		return l.backItem
+	}
+	return l.frontItem
+}
+
+func (l *list) PushFront(v interface{}) *ListItem {
+	currentFrontItem := l.Front()
+
+	newItem := &ListItem{
+		Value: v,
+		Next: currentFrontItem,
+	}
+
+	if currentFrontItem != nil {
+		(*currentFrontItem).Prev = newItem
+	}
+
+	l.frontItem = newItem
+	l.countOfListItems++
+	return newItem
+}
+
+func (l *list) PushBack(v interface{}) *ListItem {
+	currentBackItem := l.Back()
+
+	newItem := &ListItem{
+		Value: v,
+		Prev: currentBackItem,
+	}
+
+	if currentBackItem != nil {
+		(*currentBackItem).Next = newItem
+	}
+
+	l.backItem = newItem
+	l.countOfListItems++
+	return newItem
+}
+
+func (l *list) Remove(i *ListItem) {
+	if l.countOfListItems == 0 {
+		return
+	}
+	l.countOfListItems--
+
+	prevListItem := i.Prev
+	nextListItem := i.Next
+	
+	if nextListItem != nil && prevListItem != nil {
+		prevListItem.Next = nextListItem
+		nextListItem.Prev = prevListItem
+		return
+	}
+
+	if nextListItem != nil {
+		nextListItem.Prev = nil
+		l.backItem = nextListItem
+		return
+	}
+
+	if prevListItem != nil {
+		prevListItem.Next = nil
+		l.frontItem = prevListItem
+		return
+	}
+}
+
+func (l *list) MoveToFront(i *ListItem) {
+	if l.countOfListItems <= 1 {
+		return
+	}
+	if l.frontItem == i {
+		return
+	}
+
+	prevListItem := i.Prev
+	nextListItem := i.Next
+	
+	if nextListItem != nil && prevListItem != nil {
+		prevListItem.Next = nextListItem
+		nextListItem.Prev = prevListItem
+
+		i.Next = nil
+		i.Prev = l.frontItem
+	}
+
+	if prevListItem != nil {
+		prevListItem.Next = nil
+
+		i.Next = l.frontItem
+		i.Prev = nil
+		
+		l.backItem = prevListItem
+	}
+	l.frontItem = i
 }
 
 func NewList() List {
