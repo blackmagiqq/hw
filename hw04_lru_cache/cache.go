@@ -1,6 +1,8 @@
 package hw04lrucache
 
-import "maps"
+import (
+	"maps"
+)
 
 type Key string
 
@@ -30,7 +32,7 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 	if len(c.items) > c.capacity {
 		backEl := c.queue.Back()
 		c.queue.Remove(backEl)
-		maps.DeleteFunc(c.items, func (key Key, value *ListItem) bool {
+		maps.DeleteFunc(c.items, func(_ Key, value *ListItem) bool {
 			return value == backEl
 		})
 	}
@@ -48,7 +50,10 @@ func (c *lruCache) Get(key Key) (interface{}, bool) {
 }
 
 func (c *lruCache) Clear() {
-	
+	for k, v := range c.items {
+		c.queue.Remove(v)
+		delete(c.items, k)
+	}
 }
 
 func NewCache(capacity int) Cache {
