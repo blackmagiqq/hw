@@ -50,7 +50,31 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		c := NewCache(3)
+
+		c.Set("aaa", 400) // [400]
+		c.Set("bbb", 300) // [300, 400]
+		c.Set("ccc", 200) // [200, 300, 400]
+		c.Set("ddd", 100) // [100, 200, 300]
+
+		cache := c.(*lruCache)
+		list := cache.queue
+
+		expectedFrontValue := 100
+		expectedBackValue := 300
+
+		require.Equal(t, expectedFrontValue, list.Front().Value, "unexpected front value")
+		require.Equal(t, expectedBackValue, list.Back().Value, "unexpected back value")
+
+		c.Set("bbb", 3000) // [3000, 100, 200]
+		c.Set("ddd", 1000) // [1000, 3000, 200]
+		c.Set("fff", 4000) // [4000, 1000, 3000]
+
+		expectedFrontValue = 4000
+		expectedBackValue = 3000
+
+		require.Equal(t, expectedFrontValue, list.Front().Value, "unexpected front value")
+		require.Equal(t, expectedBackValue, list.Back().Value, "unexpected back value")
 	})
 }
 
