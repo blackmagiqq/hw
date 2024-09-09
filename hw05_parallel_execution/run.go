@@ -13,7 +13,7 @@ var isIngoringErrors bool
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
-	tasksChannel := make(chan Task, len(tasks))
+	tasksChannel := make(chan Task)
 	wg := sync.WaitGroup{}
 	mu := sync.RWMutex{}
 	errsCount := 0
@@ -24,10 +24,16 @@ func Run(tasks []Task, n, m int) error {
 
 	for i := 0; i < n; i++ {
 		wg.Add(1)
-		go worker(tasksChannel, &mu, &wg, &errsCount, m)
+		go worker(tasksChannel, &mu, &wg, &errsCount)
 	}
 
 	for _, task := range tasks {
+		mu.RLock()
+		isOverLimit := errsCount >= m
+		mu.RUnlock()
+		if isOverLimit && !isIngoringErrors {
+			break
+		}
 		tasksChannel <- task
 	}
 	close(tasksChannel)
@@ -40,15 +46,9 @@ func Run(tasks []Task, n, m int) error {
 	return nil
 }
 
-func worker(tasks <-chan Task, mu *sync.RWMutex, wg *sync.WaitGroup, countErrs *int, limit int) {
+func worker(tasks <-chan Task, mu *sync.RWMutex, wg *sync.WaitGroup, countErrs *int) {
 	defer wg.Done()
 	for task := range tasks {
-		mu.RLock()
-		isOverLimit := *countErrs >= limit
-		mu.RUnlock()
-		if isOverLimit && !isIngoringErrors {
-			break
-		}
 		if err := task(); err != nil {
 			mu.Lock()
 			*countErrs++
