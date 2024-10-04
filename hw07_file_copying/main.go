@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 )
 
 var (
@@ -18,5 +19,18 @@ func init() {
 
 func main() {
 	flag.Parse()
-	// Place your code here.
+	checkFilesIsSpecified()
+	err := Copy(from, to, offset, limit)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func checkFilesIsSpecified() {
+	if from == "" {
+		log.Fatal("File to read from not specified")
+	}
+	if to == "" {
+		log.Fatal("File to write to not specified")
+	}
 }
