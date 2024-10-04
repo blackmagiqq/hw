@@ -10,6 +10,8 @@ var (
 	ErrUnsupportedFile       = errors.New("unsupported file")
 	ErrOffsetExceedsFileSize = errors.New("offset exceeds file size")
 	ErrFileNotFound          = errors.New("file not found")
+	ErrOffsetLength          = errors.New("offset cannot be greater than file size")
+	ErrLimitLength           = errors.New("limit cannot be greater than file size")
 )
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
@@ -23,10 +25,10 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		return ErrUnsupportedFile
 	}
 	if offset > fromStat.Size() {
-		return errors.New("offset cannot be greater than file size")
+		return ErrOffsetLength
 	}
 	if limit > fromStat.Size() {
-		return errors.New("limit cannot be greater than file size")
+		return ErrLimitLength
 	}
 	if limit == 0 {
 		limit = fromStat.Size() - offset
