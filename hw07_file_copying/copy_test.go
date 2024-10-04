@@ -8,14 +8,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+
+const (
+	fromFileName = "testfile"
+	fromContent  = "Hello, Otus!"
+)
+
 func TestCopy(t *testing.T) {
 	t.Run("negative - file from not found", func(t *testing.T) {
 		err := Copy("foo", "bar", 0, 0)
 		require.ErrorAs(t, err, &ErrUnsupportedFile)
 	})
 	t.Run("negative - offset is greater than file", func(t *testing.T) {
-		fromFileName := "testfile"
-		fromContent := "Hello, Otus!"
 		fromContentLength := len(fromContent)
 
 		from, _ := os.Create(fromFileName)
@@ -26,13 +30,11 @@ func TestCopy(t *testing.T) {
 		from.WriteString(fromContent)
 
 		pwd, _ := os.Getwd()
-	
-		err := Copy(path.Join(pwd, fromFileName), "bar", int64(fromContentLength) + 1, 0)
+
+		err := Copy(path.Join(pwd, fromFileName), "bar", int64(fromContentLength)+1, 0)
 		require.ErrorAs(t, err, &ErrOffsetLength)
 	})
 	t.Run("negative - limit is greater than file", func(t *testing.T) {
-		fromFileName := "testfile"
-		fromContent := "Hello, Otus!"
 		fromContentLength := len(fromContent)
 
 		from, _ := os.Create(fromFileName)
@@ -43,12 +45,10 @@ func TestCopy(t *testing.T) {
 		from.WriteString(fromContent)
 
 		pwd, _ := os.Getwd()
-		err := Copy(path.Join(pwd, fromFileName), "bar", 0, int64(fromContentLength) + 1)
+		err := Copy(path.Join(pwd, fromFileName), "bar", 0, int64(fromContentLength)+1)
 		require.ErrorAs(t, err, &ErrLimitLength)
 	})
 	t.Run("positive - simple copy", func(t *testing.T) {
-		fromFileName := "testfile"
-		fromContent := "Hello, Otus!"
 		toFileName := "testfileto"
 
 		from, _ := os.Create(fromFileName)
@@ -64,7 +64,7 @@ func TestCopy(t *testing.T) {
 			t.Fatalf("copy fail: %v", err)
 		}
 
-		to, err := os.OpenFile(toFileName, os.O_RDONLY, 0222)
+		to, err := os.OpenFile(toFileName, os.O_RDONLY, 0o222)
 		if err != nil {
 			t.Fatalf("file not created: %v", err)
 		}
