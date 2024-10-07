@@ -16,8 +16,9 @@ type ValidationError struct {
 
 type ValidationErrors []ValidationError
 
+var errMsgs []string
+
 func (v ValidationErrors) Error() string {
-	var errMsgs []string
 	for _, ve := range v {
 		errMsgs = append(errMsgs, fmt.Sprintf("%s: %v", ve.Field, ve.Err))
 	}
@@ -46,14 +47,14 @@ func Validate(v interface{}) error {
 			for j := 0; j < fieldValue.Len(); j++ {
 				elemValue := fieldValue.Index(j)
 				for _, validator := range validators {
-					if err := applyValidator(field.Name, elemValue, validator); err != nil {
+					if err := applyValidator(elemValue, validator); err != nil {
 						validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
 					}
 				}
 			}
 		} else {
 			for _, validator := range validators {
-				if err := applyValidator(field.Name, fieldValue, validator); err != nil {
+				if err := applyValidator(fieldValue, validator); err != nil {
 					validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
 				}
 			}
@@ -66,7 +67,7 @@ func Validate(v interface{}) error {
 	return nil
 }
 
-func applyValidator(fieldName string, fieldValue reflect.Value, validator string) error {
+func applyValidator(fieldValue reflect.Value, validator string) error {
 	parts := strings.SplitN(validator, ":", 2)
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid validator format: %s", validator)

@@ -14,6 +14,7 @@ linters-settings:
         allow:
           - $gostd
           - "github.com/stretchr/testify/require"
+          - "github.com/stretchr/testify/assert"
 
 issues:
   exclude-rules:
@@ -34,11 +35,9 @@ linters:
     - bodyclose
     - durationcheck
     - errorlint
-    - exhaustive
     - exportloopref
     - funlen
     - gci
-    - gocognit
     - goconst
     - gocritic
     - gocyclo
