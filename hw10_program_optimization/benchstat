@@ -1,0 +1,15 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/fixme_my_friend/hw10_program_optimization
+BenchmarkGetDomainStat-8   	  318990	      3762 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  318166	      3762 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  307809	      3993 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  322432	      3709 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  324594	      3734 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  314892	      3771 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  319747	      3794 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  302484	      3727 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  321308	      3763 ns/op	    5600 B/op	      30 allocs/op
+BenchmarkGetDomainStat-8   	  311311	      3923 ns/op	    5600 B/op	      30 allocs/op
+PASS
+ok  	github.com/fixme_my_friend/hw10_program_optimization	12.668s
